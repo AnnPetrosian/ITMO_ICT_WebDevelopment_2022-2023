@@ -84,7 +84,7 @@
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-level="2"><a href="#-" class="nav-link">Лабораторная работа - Доска домашних заданий</a>
+            <li class="nav-item" data-level="2"><a href="#-2" class="nav-link">Лабораторная работа - Доска домашних заданий (Вариант 2)</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -97,8 +97,8 @@
 
 <h1 id="2">Лабораторная работа 2</h1>
 <ul>
-<li><a href="https://github.com/TonikX/ITMO_ICT_WebDevelopment_2022-2023/pull/64">github</a> - пул-реквест</li>
-<li><a href="https://github.com/joemccann/dillinger.git">gd</a> - скринкаст (есть в пр)</li>
+<li><a href="https://github.com/TonikX/ITMO_ICT_WebDevelopment_2022-2023/pull/64">github</a> - пулл-реквест
+Скринкаст по ссылке в пулл-реквесте</li>
 </ul>
 <h2 id="_1">Практические задания</h2>
 <p>Работаем в виртуальном окружении, досутп у серверу http://127.0.0.1:8000/
@@ -139,7 +139,7 @@ class DrivingLicense(models.Model):
     date_of_issue = models.DateField(default=date(2010, 1, 1))
     type = models.CharField(max_length=3, choices=LICENCE_TYPES)
 </code></pre></div>
-<p>Добавим формы для работы, для этого нужно в настройках проекта прописать путь к папке, в которой они хранятся:</p>
+<p>Добавим формы для манипуляций с данными, для этого нужно в настройках проекта прописать путь к папке, в которой они хранятся:</p>
 <div class="highlight"><pre><span></span><code>TEMPLATES = [
     {
         &#39;BACKEND&#39;: &#39;django.template.backends.django.DjangoTemplates&#39;,
@@ -290,7 +290,7 @@ class CarUpdate(UpdateView):
     success_url = &#39;/cars/&#39;
     template_name = &#39;car_create_update.html&#39;
 </code></pre></div>
-<h2 id="-">Лабораторная работа - Доска домашних заданий</h2>
+<h2 id="-2">Лабораторная работа - Доска домашних заданий (Вариант 2)</h2>
 <blockquote>
 <p>О домашнем задании должна храниться следующая информация: предмет,
 преподаватель, дата выдачи, период выполнения, текст задания, информация о штрафах.
@@ -303,7 +303,405 @@ class CarUpdate(UpdateView):
 задание средствами Django-admin.
     - В клиентской части должна формироваться таблица, отображающая оценки
 всех учеников класса.</p>
-</blockquote></div>
+</blockquote>
+<p>Создадим три сущности - ученик (class Student), домашнее задание(class Homework) и его выполнение(class Assignment). Так как учитель выступает в роли администратора, то сущность преподавателя создавать не будем.
+models.py</p>
+<div class="highlight"><pre><span></span><code>from django.db import models
+from django.contrib.auth.models import User, AbstractUser
+from django.dispatch import receiver
+
+class Homework(models.Model):
+    homework_id = models.IntegerField(blank=False, primary_key=True)
+    name = models.CharField(max_length=100, blank=False)
+    task = models.CharField(max_length=300)
+    subject = models.CharField(max_length=30, blank=False)
+    begin_date = models.DateField(blank=False)
+    deadline = models.DateField(blank=False)
+    penalty = models.CharField(max_length=100)
+    teacher = models.CharField(max_length=30, blank=False)
+    students = models.ManyToManyField(&#39;Student&#39;, through=&#39;Assignment&#39;)
+
+    def __str__(self):
+        return self.name
+
+
+class Student(AbstractUser):
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    REQUIRED_FIELDS = [&#39;first_name&#39;, &#39;last_name&#39;]
+
+    def __str__(self):
+        return f&#39;{self.first_name} {self.last_name}&#39;
+
+
+class Assignment(models.Model):
+    assignment_id = models.IntegerField(blank=False, primary_key=True)
+    student = models.ForeignKey(&#39;Student&#39;, on_delete=models.CASCADE)
+    homework = models.ForeignKey(&#39;Homework&#39;, on_delete=models.CASCADE)
+    grade = models.CharField(default=&#39;-&#39;, max_length=5, blank=True)
+    submission = models.CharField(max_length=300, blank=True)
+
+    def __str__(self):
+        return f&#39;{self.student.first_name} {self.student.last_name}:\
+        {self.homework.name}\
+        | {&quot;graded&quot; if self.grade != &quot;-&quot; else &quot;submitted&quot; if len(self.submission) else &quot;in process&quot;}&#39;
+
+
+@receiver(models.signals.post_save, sender=Homework)
+def execute_after_save(sender, instance, created, *args, **kwargs):
+    if created:
+        students = Student.objects.exclude(username=&quot;teacher&quot;).all()
+        for student in students:
+            duplicates = Assignment.objects.filter(student=student, homework=instance).all()
+            if not len(duplicates):
+                assignment = Assignment(student=student, homework=instance)
+                assignment.save()
+
+# Create your models here.
+</code></pre></div>
+<p>view.py - Запросы к базе данных, перенаправление к urls</p>
+<div class="highlight"><pre><span></span><code>from django.shortcuts import render, redirect
+from django.urls import reverse
+from django.db import IntegrityError
+from django.contrib.auth import authenticate, login, logout
+from django.views.generic import ListView, DetailView
+from django.contrib.auth.decorators import login_required
+from homework_app.models import Student, Homework, Assignment
+from homework_app.forms import AssignmentForm
+
+
+def register(request):
+    if request.method == &quot;POST&quot;:
+        username = request.POST[&quot;username&quot;]
+        password = request.POST[&quot;password&quot;]
+        email = request.POST[&quot;email&quot;]
+        first_name = request.POST.get(&quot;first_name&quot;, &#39;NaN&#39;)
+        last_name = request.POST.get(&quot;last_name&quot;, &#39;NaN&#39;)
+
+        confirmation = request.POST[&quot;confirmation&quot;]
+        if password != confirmation:
+            return render(request, &quot;register.html&quot;, {
+                &quot;message&quot;: &quot;passwords do not match&quot;
+            })
+
+        try:
+            student = Student.objects.create_user(username, email, password)
+            student.first_name = first_name
+            student.last_name = last_name
+            student.save()
+            homeworks = Homework.objects.all()
+            for homework in homeworks:
+                assignment = Assignment(student=student, homework=homework)
+                assignment.save()
+        except IntegrityError:
+            return render(request, &quot;register.html&quot;, {
+                &quot;message&quot;: &quot;username already taken&quot;
+            })
+        login(request, student)
+        return redirect(reverse(&quot;homework_list&quot;))
+    else:
+        return render(request, &quot;register.html&quot;)
+
+
+def log_in(request):
+    if request.method == &quot;POST&quot;:
+        username = request.POST[&#39;username&#39;]
+        password = request.POST[&#39;password&#39;]
+
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect(reverse(&#39;homework_list&#39;))
+        else:
+            error_text = &#39;invalid credentials&#39;
+
+    return render(request, &#39;login.html&#39;, locals())
+
+
+@login_required
+def log_out(request):
+    logout(request)
+    return redirect(reverse(&#39;login&#39;))
+
+
+@login_required
+def class_grades_list(request):
+    context = {}
+    students = Student.objects.exclude(username=&quot;teacher&quot;).all()
+    context[&quot;students&quot;] = students
+    context[&quot;homeworks&quot;] = Homework.objects.all()
+    context[&quot;grades&quot;] = {}
+    assignments = Assignment.objects.all()
+    for homework in context[&quot;homeworks&quot;]:
+        for assignment in assignments:
+            if assignment.homework == homework and assignment.student.pk != 3:
+                if not assignment.student.pk in context[&quot;grades&quot;]:
+                    context[&quot;grades&quot;][assignment.student.pk] = []
+                context[&quot;grades&quot;][assignment.student.pk].append(
+                assignment.grade)
+
+    return render(request, &#39;class_grades.html&#39;, context)
+
+
+class HomeworkList(ListView):
+    model = Homework
+    template_name = &#39;homework_list.html&#39;
+
+
+class HomeworkDetail(DetailView):
+    model = Homework
+    template_name = &#39;homework_detail.html&#39;
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context[&#39;form&#39;] = AssignmentForm()
+        return context
+
+
+@login_required
+def hand_in(request, pk):
+    homework = Homework.objects.get(pk=pk)
+    assignment = Assignment.objects.get(student=request.user,
+                                    homework=homework)
+    form = AssignmentForm(request.POST, instance=assignment)
+    if form.is_valid():
+        form.save()
+
+        return redirect(reverse(&#39;homework_list&#39;))
+# Create your views here.
+</code></pre></div>
+<p>urls.py - перенаправление к html</p>
+<div class="highlight"><pre><span></span><code>from django.urls import path
+from django.contrib.auth.decorators import login_required
+from homework_app import views
+
+urlpatterns = [
+    path(&#39;register/&#39;, views.register, name=&#39;register&#39;),
+    path(&#39;login/&#39;, views.log_in, name=&#39;login&#39;),
+    path(&#39;log_out/&#39;, views.log_out, name=&#39;logout&#39;),
+    path(&#39;class_grades/&#39;, views.class_grades_list, name=&#39;class_grades&#39;),
+    path(&#39;homework/&#39;, login_required(views.HomeworkList.as_view()),
+     name=&#39;homework_list&#39;),
+    path(&#39;homework/&lt;int:pk&gt;&#39;, login_required(views.HomeworkDetail.as_view()),
+     name=&#39;homework_detail&#39;),
+    path(&#39;handin/&lt;int:pk&gt;&#39;, login_required(views.hand_in), name=&#39;handin&#39;)
+]
+</code></pre></div>
+<p>html:
+- base - страница, которая открывается после авторизации ученика
+- class_grades - доступ к оценкам учеников
+- homework_detail - переход к домашнему заданию
+- homework_list - список домашних заданий
+- login - вход ученика
+- register - регистрация ученика</p>
+<p>base.html</p>
+<div class="highlight"><pre><span></span><code>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;title&gt;Homework&lt;/title&gt;
+    &lt;style&gt;
+        body {
+            padding-left: 30px;
+        }
+        nav {
+            background-color: lightgray;
+        }
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;nav&gt;
+    {% if user.is_authenticated %}
+        &lt;a href=&quot;{% url &#39;class_grades&#39; %}&quot;&gt;Class grades&lt;/a&gt;
+        &lt;a href=&quot;{% url &#39;homework_list&#39; %}&quot;&gt;My homework&lt;/a&gt;
+        &lt;a href=&quot;{% url &#39;logout&#39; %}&quot;&gt;Log out&lt;/a&gt;
+    {% endif %}
+
+    {% if not user.is_authenticated %}
+        &lt;a href=&quot;{% url &#39;login&#39; %}&quot;&gt;Log in&lt;/a&gt;
+        &lt;a href=&quot;{% url &#39;register&#39; %}&quot;&gt;Register&lt;/a&gt;
+    {% endif %}
+&lt;/nav&gt;
+&lt;br/&gt;
+{% block body %}
+{% endblock %}
+
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre></div>
+<p>class_grades.html</p>
+<div class="highlight"><pre><span></span><code>{% extends &#39;base.html&#39; %}
+{% block body %}
+
+&lt;table&gt;
+    &lt;tr&gt;
+        &lt;th&gt;Student&lt;/th&gt;
+
+    {% for homework in homeworks %}
+        &lt;th&gt;{{ homework.name }}&lt;/th&gt;
+    {% endfor %}
+
+&lt;/tr&gt;
+
+{% for student in students %}
+    &lt;tr&gt;
+        &lt;td&gt;{{ student.first_name }} {{ student.last_name }}&lt;/td&gt;
+
+        {% for key, values in grades.items %}
+            {% if key == student.pk %}
+
+                {% for value in values %}
+                &lt;td&gt;{{ value }}&lt;/td&gt;
+                {% endfor %}
+
+            {% endif %}
+        {% endfor %}
+    &lt;/tr&gt;
+{% endfor %}
+&lt;/table&gt;
+
+{% endblock %}
+Footer
+</code></pre></div>
+<p>homework_detail.html</p>
+<div class="highlight"><pre><span></span><code>{% extends &#39;base.html&#39; %}
+
+{% block body %}
+
+    &lt;h2&gt;{{ object.name }}&lt;/h2&gt;
+    &lt;h3&gt;{{ object.subject }}&lt;/h3&gt;
+    &lt;p&gt;
+        Teacher: {{ object.teacher }}
+    &lt;/p&gt;
+    &lt;div&gt;
+        &lt;p&gt;Given on: {{ object.begin_date }}&lt;/p&gt;
+        &lt;p&gt;Deadline: &lt;span style=&quot;color: red&quot;&gt;{{ object.deadline }}&lt;/span&gt;&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;hr/&gt;
+    &lt;div&gt;
+        {{ object.task }}
+    &lt;/div&gt;
+
+    {% if user.is_authenticated %}
+    &lt;form action=&quot;{% url &#39;handin&#39; object.pk %}&quot; method=&quot;post&quot;&gt;
+        {% csrf_token %}
+        {{ form.as_p }}
+        &lt;input type=&quot;submit&quot; value=&quot;Submit&quot;&gt;
+    &lt;/form&gt;
+    {% endif %}
+    &lt;br/&gt;
+
+    &lt;a href=&quot;{% url &#39;homework_list&#39; %}&quot;&gt;To homework list&lt;/a&gt;
+
+{% endblock %}
+</code></pre></div>
+<p>homework_list.html</p>
+<div class="highlight"><pre><span></span><code>{% extends &#39;base.html&#39; %}
+
+{% block body %}
+
+&lt;table&gt;
+    &lt;tr&gt;
+        &lt;th&gt;Name&lt;/th&gt;
+        &lt;th&gt;Subject&lt;/th&gt;
+        &lt;th&gt;Given on&lt;/th&gt;
+        &lt;th&gt;Deadline&lt;/th&gt;
+        &lt;th&gt;Teacher&lt;/th&gt;
+        &lt;th&gt;Penalty&lt;/th&gt;
+    &lt;/tr&gt;
+
+    {% for homework in object_list %}
+        &lt;tr&gt;
+            &lt;td&gt;
+                &lt;a href=&quot;{% url &#39;homework_detail&#39; homework.pk %}&quot;&gt;
+                    {{ homework.name }}
+                &lt;/a&gt;
+            &lt;/td&gt;
+            &lt;td&gt;{{ homework.subject }}&lt;/td&gt;
+            &lt;td&gt;{{ homework.begin_date }}&lt;/td&gt;
+            &lt;td&gt;{{ homework.deadline }}&lt;/td&gt;
+            &lt;td&gt;{{ homework.teacher }}&lt;/td&gt;
+            &lt;td&gt;{{ homework.penalty }}&lt;/td&gt;
+        &lt;/tr&gt;
+    {% endfor %}
+&lt;/table&gt;
+
+{% endblock %}
+</code></pre></div>
+<p>login.html</p>
+<div class="highlight"><pre><span></span><code>{% extends &#39;base.html&#39; %}
+
+{% block body %}
+
+    &lt;h2&gt;Login&lt;/h2&gt;
+
+    {% if next %}
+        {% if user.is_authenticated %}
+            &lt;p&gt;Your account doesn&#39;t have access to this page. To proceed, please login with an account that has access.&lt;/p&gt;
+        {% else %}
+            &lt;p&gt;Please login to see this page.&lt;/p&gt;
+        {% endif %}
+    {% endif %}
+
+    &lt;form action=&quot;{% url &#39;login&#39; %}&quot; method=&quot;post&quot;&gt;
+        {% csrf_token %}
+        &lt;div class=&quot;form-group&quot;&gt;
+            &lt;input autofocus class=&quot;form-control&quot; type=&quot;text&quot; name=&quot;username&quot; placeholder=&quot;Username&quot;&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;form-group&quot;&gt;
+            &lt;input class=&quot;form-control&quot; type=&quot;password&quot; name=&quot;password&quot; placeholder=&quot;Password&quot;&gt;
+        &lt;/div&gt;
+        &lt;input class=&quot;btn btn-primary&quot; type=&quot;submit&quot; value=&quot;Login&quot;&gt;
+    &lt;/form&gt;
+
+    Don&#39;t have an account? &lt;a href=&quot;{% url &#39;register&#39; %}&quot;&gt;Register here.&lt;/a&gt;
+
+{% endblock %}
+Footer
+</code></pre></div>
+<p>register.html</p>
+<div class="highlight"><pre><span></span><code>{% extends &#39;base.html&#39; %}
+
+{% block body %}
+
+    &lt;h2&gt;Register&lt;/h2&gt;
+
+    {% if message %}
+        &lt;div&gt;{{ message }}&lt;/div&gt;
+    {% endif %}
+
+    &lt;form action=&quot;{% url &#39;register&#39; %}&quot; method=&quot;post&quot;&gt;
+        {% csrf_token %}
+        &lt;div class=&quot;form-group&quot;&gt;
+            &lt;input class=&quot;form-control&quot; autofocus type=&quot;text&quot; name=&quot;username&quot; placeholder=&quot;Username&quot;&gt;
+     &lt;/div&gt;
+        &lt;div class=&quot;form-group&quot;&gt;
+            &lt;input class=&quot;form-control&quot; type=&quot;email&quot; name=&quot;email&quot; placeholder=&quot;Email Address&quot;&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;form-group&quot;&gt;
+            &lt;input class=&quot;form-control&quot; autofocus type=&quot;text&quot; name=&quot;first_name&quot; placeholder=&quot;First name&quot;&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;form-group&quot;&gt;
+            &lt;input class=&quot;form-control&quot; autofocus type=&quot;text&quot; name=&quot;last_name&quot; placeholder=&quot;Last name&quot;&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;form-group&quot;&gt;
+            &lt;input class=&quot;form-control&quot; type=&quot;password&quot; name=&quot;password&quot; placeholder=&quot;Password&quot;&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;form-group&quot;&gt;
+            &lt;input class=&quot;form-control&quot; type=&quot;password&quot; name=&quot;confirmation&quot; placeholder=&quot;Confirm Password&quot;&gt;
+        &lt;/div&gt;
+        &lt;input class=&quot;btn btn-primary&quot; type=&quot;submit&quot; value=&quot;Register&quot;&gt;
+    &lt;/form&gt;
+
+    Already have an account? &lt;a href=&quot;{% url &#39;login&#39; %}&quot;&gt;Log In here.&lt;/a&gt;
+
+{% endblock %}
+</code></pre></div></div>
             </div>
         </div>
 
