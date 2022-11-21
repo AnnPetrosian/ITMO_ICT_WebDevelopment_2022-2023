@@ -103,7 +103,7 @@
 <ul>
 <li><a href="https://github.com/TonikX/ITMO_ICT_WebDevelopment_2022-2023/pull/64">github</a> - пулл-реквест</li>
 <li><a href="https://youtu.be/jxA2TuXeB7A">version_1</a> - скринкаст работы первой версии</li>
-<li><a href="https://youtu.be/jxA2TuXeB7A">version_2</a> - скринкаст работы второй версии</li>
+<li><a href="https://youtu.be/4fus3y0qsAM">version_2</a> - скринкаст работы ПРИЛИЧНОЙ версии</li>
 </ul>
 <h2 id="_1">Практические задания</h2>
 <p>Работаем в виртуальном окружении, досутп у серверу http://127.0.0.1:8000/
@@ -1046,11 +1046,9 @@ def hand_in(request, pk):
 
 &lt;/body&gt;
 &lt;/html&gt;
-
-
-createhomework.html- учитель может создавать домашку не только из админки
-
-{% extends &#39;base.html&#39; %}
+</code></pre></div>
+<p>createhomework.html- учитель может создавать домашку не только из админки</p>
+<div class="highlight"><pre><span></span><code>{% extends &#39;base.html&#39; %}
 
 {% load crispy_forms_tags %}
 
@@ -1070,12 +1068,10 @@ createhomework.html- учитель может создавать домашку
     &lt;/div&gt;
 &lt;/div&gt;
 {% endblock %}
-
-
-studentgrade.html - доступен только учителю:
-{% extends &#39;base.html&#39; %}
-
-{% block body %}
+</code></pre></div>
+<p>studentgrade.html - доступен только учителю:
+    {% extends 'base.html' %}</p>
+<div class="highlight"><pre><span></span><code>{% block body %}
 
 &lt;table&gt;
     &lt;tr&gt;
