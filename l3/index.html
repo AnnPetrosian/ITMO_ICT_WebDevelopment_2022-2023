@@ -211,12 +211,14 @@ DrivingLicense.objects.get(owner_id=needed_id)</p>
 </ul>
 <p><a href="https://drive.google.com/file/d/1qV1YCj9SPBX4jqrKvgvUGCkIzVCgq_EO/view?usp=sharing">Скриншот из консоли</a></p>
 <ul>
-<li>Вывести всех владельцев красных машин (или любого другого цвета, который у вас присутствует)
-Owner.objects.filter(owning_car__car__color="pink")</li>
-</ul>
-<p><a href="https://drive.google.com/file/d/1sAfFnVKFOT_LGS6e5Q3EW9MYLEUDnuc-/view?usp=sharing">Скриншот из консоли</a></p>
-<ul>
-<li>Найти всех владельцев, чей год владения машиной начинается с 2010 (или любой другой год, который присутствует у вас в базе)<blockquote>
+<li>
+<p>Вывести всех владельцев красных машин (или любого другого цвета, который у вас присутствует)
+Owner.objects.filter(owning_car__car__color="pink")
+<a href="https://drive.google.com/file/d/1sAfFnVKFOT_LGS6e5Q3EW9MYLEUDnuc-/view?usp=sharing">Скриншот из консоли</a></p>
+</li>
+<li>
+<p>Найти всех владельцев, чей год владения машиной начинается с 2010 (или любой другой год, который присутствует у вас в базе)</p>
+<blockquote>
 <blockquote>
 <blockquote>
 <p>Owning.objects.filter(begin_date__gte="2010-12-12")</p>
@@ -227,18 +229,16 @@ Owner.objects.filter(owning_car__car__color="pink")</li>
 </ul>
 <p><a href="https://drive.google.com/file/d/1COWwreQII_uArQ9f_QCTyl2A58oi52ms/view?usp=sharing">Скриншот из консоли</a></p>
 <h3 id="3_1">Часть 3</h3>
-<p>Необходимо реализовать следующие запросы:</p>
-<ul>
-<li>Вывод даты выдачи самого старшего водительского удостоверения
- from django.db.models import Avg ,Min,Max, Count<blockquote>
+<p>Необходимо реализовать следующие запросы:
+- Вывод даты выдачи самого старшего водительского удостоверения
+ from django.db.models import Avg ,Min,Max, Count</p>
+<blockquote>
 <blockquote>
 <blockquote>
 <p>DrivingLicense.objects.aggregate(begin_date = Min("date_of_issue"))</p>
 </blockquote>
 </blockquote>
 </blockquote>
-</li>
-</ul>
 <p><a href="https://drive.google.com/file/d/1By6CBSaFaRZT46lfAPlWWG-wcBzqE-Iy/view?usp=sharing">Скриншот из консоли</a></p>
 <ul>
 <li>Укажите самую позднюю дату владения машиной, имеющую какую-то из существующих моделей в вашей базе<blockquote>
