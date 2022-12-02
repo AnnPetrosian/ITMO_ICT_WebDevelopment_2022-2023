@@ -221,38 +221,42 @@ Owner.objects.filter(owning_car__car__color="pink")
 <blockquote>
 <blockquote>
 <blockquote>
-<p>Owning.objects.filter(begin_date__gte="2010-12-12")</p>
+<p>Owner.objects.filter(owning_car__begin_date__gte="2010-12-12")</p>
 </blockquote>
 </blockquote>
 </blockquote>
 </li>
 </ul>
-<p><a href="https://drive.google.com/file/d/1COWwreQII_uArQ9f_QCTyl2A58oi52ms/view?usp=sharing">Скриншот из консоли</a></p>
+<p><a href="https://drive.google.com/file/d/1YuDnyYSiCgOLkvkTPLIjIArbkbc6VJCy/view?usp=sharing">Скриншот из консоли</a></p>
 <h3 id="3_1">Часть 3</h3>
-<p>Необходимо реализовать следующие запросы:
-- Вывод даты выдачи самого старшего водительского удостоверения
- from django.db.models import Avg ,Min,Max, Count</p>
-<blockquote>
+<p>Необходимо реализовать следующие запросы:</p>
+<ul>
+<li>Вывод даты выдачи самого старшего водительского удостоверения
+ from django.db.models import Avg ,Min,Max, Count<blockquote>
 <blockquote>
 <blockquote>
 <p>DrivingLicense.objects.aggregate(begin_date = Min("date_of_issue"))</p>
 </blockquote>
 </blockquote>
 </blockquote>
+</li>
+</ul>
 <p><a href="https://drive.google.com/file/d/1By6CBSaFaRZT46lfAPlWWG-wcBzqE-Iy/view?usp=sharing">Скриншот из консоли</a></p>
 <ul>
-<li>Укажите самую позднюю дату владения машиной, имеющую какую-то из существующих моделей в вашей базе<blockquote>
+<li>
+<p>Укажите самую позднюю дату владения машиной, имеющую какую-то из существующих моделей в вашей базе</p>
 <blockquote>
 <blockquote>
-<p>Owning.objects.aggregate(begin_date = Max("begin_date"))</p>
+<blockquote>
+<p>Owning.objects.filter(car_id__car_model="A").aggregate(begin_date = Max("begin_date"))
+На <a href="https://drive.google.com/file/d/1gyF08zSp1Yz0sGfjbjgg3n8yVfmHAZE2/view?usp=sharing">скринкасте</a> видно, что сначала модели 'b' не было, но после добавления она появилась</p>
 </blockquote>
 </blockquote>
 </blockquote>
 </li>
-</ul>
-<p><a href="https://drive.google.com/file/d/1dbQRTCAFZViZ3zXzuUug_fOJ63QLRsBX/view?usp=sharing">Скринкаст из консоли</a></p>
-<ul>
-<li>Выведите количество машин для каждого водителя<blockquote>
+<li>
+<p>Выведите количество машин для каждого водителя</p>
+<blockquote>
 <blockquote>
 <blockquote>
 <p>Owning.objects.values("owner_id").annotate(Count("car"))</p>
