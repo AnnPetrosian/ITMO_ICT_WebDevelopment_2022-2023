@@ -246,7 +246,7 @@ Owner.objects.filter(owning_car__car__color="pink")
 <li>Укажите самую позднюю дату владения машиной, имеющую какую-то из существующих моделей в вашей базе<blockquote>
 <blockquote>
 <blockquote>
-<p>Owning.objects.filter(car_id__car_model="A").aggregate(begin_date = Max("begin_date"))</p>
+<p>Owning.objects.filter(car_id__car_model="a").aggregate(begin_date = Max("begin_date"))</p>
 </blockquote>
 </blockquote>
 </blockquote>
