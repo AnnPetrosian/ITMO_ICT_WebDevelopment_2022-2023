@@ -287,84 +287,584 @@ Owner.objects.filter(owning_car__car__color="pink")
 </ul>
 <p><a href="https://drive.google.com/file/d/1Nwe3DqFGitJD3emJvH2NqcP04lFcIpEy/view?usp=sharing">Скриншот из консоли</a></p>
 <h2 id="-">Лабораторная работа - Библиотека</h2>
-<p>В качестве основы взята схема с <a href="https://learnsql.ru/course/22/statistics">Онлайн-платформы по изучению SQL</a> - <a href="https://drive.google.com/file/d/1n5eZSOzRqZV9gr5YTgscvIA3qpvdP6q6/view?usp=sharing">Схема</a></p>
+<p>В качестве основы взята схема с <a href="https://learnsql.ru/course/22/statistics">Онлайн-платформы по изучению SQL</a> - <a href="https://drive.google.com/file/d/1n5eZSOzRqZV9gr5YTgscvIA3qpvdP6q6/view?usp=sharing">Схема</a> </p>
+<h3 id="_2">Модель</h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>from django.db import models
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>from django.contrib.auth.models import AbstractUser
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>class Book(models.Model):
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    title = models.CharField(max_length=800, verbose_name=&#39;Название&#39;)
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    authors = models.CharField(max_length=5000, verbose_name=&#39;Автор(ы)&#39;)
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    publisher = models.CharField(max_length=79, verbose_name=&#39;Издательство&#39;)
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    publication_year = models.IntegerField(verbose_name=&#39;Год издания&#39;)
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    genre = models.CharField(max_length=100, verbose_name=&#39;Жанр&#39;)
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    book_cypher = models.CharField(max_length=50, verbose_name=&#39;Шифр&#39;)
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    book_hall = models.ManyToManyField(&#39;Hall&#39;, through=&#39;BookInHall&#39;, verbose_name=&#39;Зал&#39;)
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    book_reader = models.ManyToManyField(&#39;Reader&#39;, through=&#39;ReaderBook&#39;, verbose_name=&#39;Читатель&#39;)
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    title =      models.CharField(max_length=800, verbose_name=&#39;Название&#39;)
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    authors =    models.CharField(max_length=5000, verbose_name=&#39;Автор(ы)&#39;)
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    publisher =   models.CharField(max_length=79, verbose_name=&#39;Издательство&#39;)
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    publication_year  = models.IntegerField(verbose_name=&#39;Год издания&#39;)
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    genre =        models.CharField(max_length=100, verbose_name=&#39;Жанр&#39;)
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    book_cypher =  models.CharField(max_length=50, verbose_name=&#39;Шифр&#39;)
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    book_hall =    models.ManyToManyField(&#39;Hall&#39;,&#39;BokkCopy&#39;, through=&#39;BookInHall&#39;, verbose_name=&#39;Зал&#39;)
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    book_reader  = models.ManyToManyField(&#39;Reader&#39;, through=&#39;ReaderBook&#39;, verbose_name=&#39;Читатель&#39;)
 <a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
 <a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    def __str__(self):
 <a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>        return self.title
 <a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>
-<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>class Hall(models.Model):
-<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>    number = models.IntegerField(verbose_name=&#39;Номер&#39;)
-<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>    title = models.CharField(max_length=500, verbose_name=&#39;Название&#39;)
-<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>    capacity = models.IntegerField(verbose_name=&#39;Вместимость&#39;)
-<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>
-<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>    def __str__(self):
-<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>        return str(self.number) + &quot; - &quot; + self.title
-<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>
-<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>
-<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>class BookInHall(models.Model):
-<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>    book = models.ForeignKey(&#39;Book&#39;, on_delete=models.CASCADE, verbose_name=&#39;Книга&#39;)
-<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>    hall = models.ForeignKey(&#39;Hall&#39;, on_delete=models.CASCADE, verbose_name=&#39;Зал&#39;)
-<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>    count = models.IntegerField(verbose_name=&#39;Число экземпляров&#39;)
-<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>
-<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>    def __str__(self):
-<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>        return str(self.book) + &quot; в зале &quot; + str(self.hall) + &quot;: &quot; + str(self.count)
-<a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>
-<a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>
-<a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>class Reader(AbstractUser):
-<a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>    username = models.CharField(max_length=30, unique=True)
-<a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>    password = models.CharField(max_length=30)
-<a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>
-<a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a>    REQUIRED_FIELDS = [&#39;card_number&#39;, &#39;first_name&#39;, &#39;last_name&#39;,
-<a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a>                       &#39;passport&#39;, &#39;date_of_birth&#39;, &#39;address&#39;, &#39;phone&#39;,
-<a id="__codelineno-0-43" name="__codelineno-0-43" href="#__codelineno-0-43"></a>                       &#39;education&#39;, &#39;degree&#39;]
-<a id="__codelineno-0-44" name="__codelineno-0-44" href="#__codelineno-0-44"></a>
-<a id="__codelineno-0-45" name="__codelineno-0-45" href="#__codelineno-0-45"></a>    card_number = models.IntegerField(verbose_name=&#39;Читательский билет&#39;, blank=True, null=True)
-<a id="__codelineno-0-46" name="__codelineno-0-46" href="#__codelineno-0-46"></a>    first_name = models.CharField(max_length=25, verbose_name=&#39;Имя&#39;, blank=True, null=True)
-<a id="__codelineno-0-47" name="__codelineno-0-47" href="#__codelineno-0-47"></a>    last_name = models.CharField(max_length=30, verbose_name=&#39;Фамилия&#39;, blank=True, null=True)
-<a id="__codelineno-0-48" name="__codelineno-0-48" href="#__codelineno-0-48"></a>    passport = models.CharField(max_length=15, verbose_name=&#39;Паспорт&#39;, blank=True, null=True)
-<a id="__codelineno-0-49" name="__codelineno-0-49" href="#__codelineno-0-49"></a>    date_of_birth = models.DateField(verbose_name=&#39;Дата рождения&#39;, blank=True, null=True)
-<a id="__codelineno-0-50" name="__codelineno-0-50" href="#__codelineno-0-50"></a>    address = models.CharField(max_length=300, verbose_name=&#39;Адрес&#39;, blank=True, null=True)
-<a id="__codelineno-0-51" name="__codelineno-0-51" href="#__codelineno-0-51"></a>    phone = models.CharField(max_length=11, verbose_name=&#39;Телефон&#39;, blank=True, null=True)
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>class Copy(models.Model):
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    id_copy = models.AutoField(&quot;ID_экземпляра&quot;, primary_key=True)
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>    section = models.CharField(max_length=20, verbose_name=&#39;Раздел&#39;)
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>    code = models.CharField(max_length=20, verbose_name=&#39;Артикул&#39;)
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>    year = models.IntegerField(verbose_name=&#39;Год издания&#39;)
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>    conditions = ( 
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>        (&#39;х&#39;, &#39;хорошее&#39;),
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>        (&#39;у&#39;, &#39;удовлетворительное&#39;),
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>        (&#39;с&#39;, &#39;старое&#39;),
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>    )
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>    condition = models.CharField(max_length=1, choices=conditions, verbose_name=&#39;Состояние экземпляра&#39;)
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>    book = models.ForeignKey(&#39;Book&#39;, verbose_name=&#39;Книга&#39;, on_delete=models.CASCADE)
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>
+<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>    def __str__(self):
+<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>        return self.code
+<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>
+<a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>class Hall(models.Model):
+<a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>    number = models.IntegerField(verbose_name=&#39;Номер&#39;)
+<a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>    title = models.CharField(max_length=500, verbose_name=&#39;Название&#39;)
+<a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>    capacity = models.IntegerField(verbose_name=&#39;Вместимость&#39;)
+<a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>
+<a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>    def __str__(self):
+<a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a>        return str(self.number) + &quot; - &quot; + self.title
+<a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a>
+<a id="__codelineno-0-43" name="__codelineno-0-43" href="#__codelineno-0-43"></a>
+<a id="__codelineno-0-44" name="__codelineno-0-44" href="#__codelineno-0-44"></a>class BookInHall(models.Model):
+<a id="__codelineno-0-45" name="__codelineno-0-45" href="#__codelineno-0-45"></a>    book = models.ForeignKey(&#39;Book&#39;,  on_delete=models.CASCADE, verbose_name=&#39;Книга&#39;)
+<a id="__codelineno-0-46" name="__codelineno-0-46" href="#__codelineno-0-46"></a>    hall = models.ForeignKey(&#39;Hall&#39;, on_delete=models.CASCADE, verbose_name=&#39;Зал&#39;,)
+<a id="__codelineno-0-47" name="__codelineno-0-47" href="#__codelineno-0-47"></a>    count = models.IntegerField(verbose_name=&#39;Число экземпляров&#39;)
+<a id="__codelineno-0-48" name="__codelineno-0-48" href="#__codelineno-0-48"></a>
+<a id="__codelineno-0-49" name="__codelineno-0-49" href="#__codelineno-0-49"></a>    def __str__(self):
+<a id="__codelineno-0-50" name="__codelineno-0-50" href="#__codelineno-0-50"></a>        return str(self.book) + &quot; в зале &quot; + str(self.hall) + &quot;: &quot; + str(self.count)
+<a id="__codelineno-0-51" name="__codelineno-0-51" href="#__codelineno-0-51"></a>
 <a id="__codelineno-0-52" name="__codelineno-0-52" href="#__codelineno-0-52"></a>
-<a id="__codelineno-0-53" name="__codelineno-0-53" href="#__codelineno-0-53"></a>    education_options = (
-<a id="__codelineno-0-54" name="__codelineno-0-54" href="#__codelineno-0-54"></a>        (&#39;Среднее общее&#39;, &#39;Среднее общее&#39;),
-<a id="__codelineno-0-55" name="__codelineno-0-55" href="#__codelineno-0-55"></a>        (&#39;Среднее специальное&#39;, &#39;Среднее специальное&#39;),
-<a id="__codelineno-0-56" name="__codelineno-0-56" href="#__codelineno-0-56"></a>        (&#39;Высшее&#39;, &#39;Высшее&#39;),
-<a id="__codelineno-0-57" name="__codelineno-0-57" href="#__codelineno-0-57"></a>        (&#39;Неоконченное высшее&#39;, &#39;Неоконченное высшее&#39;),
-<a id="__codelineno-0-58" name="__codelineno-0-58" href="#__codelineno-0-58"></a>        (&#39;Неоконченное среднее&#39;, &#39;Неоконченное среднее&#39;),
-<a id="__codelineno-0-59" name="__codelineno-0-59" href="#__codelineno-0-59"></a>    )
-<a id="__codelineno-0-60" name="__codelineno-0-60" href="#__codelineno-0-60"></a>    education = models.CharField(max_length=4000, choices=education_options, default=&#39;-&#39;,
-<a id="__codelineno-0-61" name="__codelineno-0-61" href="#__codelineno-0-61"></a>                                 verbose_name=&#39;Образование&#39;, blank=True, null=True)
-<a id="__codelineno-0-62" name="__codelineno-0-62" href="#__codelineno-0-62"></a>    degree = models.BooleanField(default=False, verbose_name=&#39;Ученая степень&#39;, blank=True, null=True)
-<a id="__codelineno-0-63" name="__codelineno-0-63" href="#__codelineno-0-63"></a>    reader_hall = models.ForeignKey(&#39;Hall&#39;, on_delete=models.CASCADE, verbose_name=&#39;Зал&#39;,
-<a id="__codelineno-0-64" name="__codelineno-0-64" href="#__codelineno-0-64"></a>                                    blank=True, null=True)
-<a id="__codelineno-0-65" name="__codelineno-0-65" href="#__codelineno-0-65"></a>    reader_book = models.ManyToManyField(&#39;Book&#39;, through=&#39;ReaderBook&#39;, verbose_name=&#39;Книга&#39;)
-<a id="__codelineno-0-66" name="__codelineno-0-66" href="#__codelineno-0-66"></a>
-<a id="__codelineno-0-67" name="__codelineno-0-67" href="#__codelineno-0-67"></a>    def __str__(self):
-<a id="__codelineno-0-68" name="__codelineno-0-68" href="#__codelineno-0-68"></a>        if self.is_superuser:
-<a id="__codelineno-0-69" name="__codelineno-0-69" href="#__codelineno-0-69"></a>            return &#39;superuser&#39;
-<a id="__codelineno-0-70" name="__codelineno-0-70" href="#__codelineno-0-70"></a>        return self.last_name + &#39; &#39; + self.first_name
-<a id="__codelineno-0-71" name="__codelineno-0-71" href="#__codelineno-0-71"></a>
-<a id="__codelineno-0-72" name="__codelineno-0-72" href="#__codelineno-0-72"></a>
-<a id="__codelineno-0-73" name="__codelineno-0-73" href="#__codelineno-0-73"></a>class ReaderBook(models.Model):
-<a id="__codelineno-0-74" name="__codelineno-0-74" href="#__codelineno-0-74"></a>    book = models.ForeignKey(&#39;Book&#39;, on_delete=models.CASCADE, verbose_name=&#39;Книга&#39;)
-<a id="__codelineno-0-75" name="__codelineno-0-75" href="#__codelineno-0-75"></a>    reader = models.ForeignKey(&#39;Reader&#39;, on_delete=models.CASCADE, verbose_name=&#39;Читатель&#39;)
-<a id="__codelineno-0-76" name="__codelineno-0-76" href="#__codelineno-0-76"></a>    issue_date = models.DateField(verbose_name=&#39;Дата выдачи&#39;, blank=True, null=True)
-<a id="__codelineno-0-77" name="__codelineno-0-77" href="#__codelineno-0-77"></a>    due_date = models.DateField(verbose_name=&#39;Дата возврата&#39;, blank=True, null=True)
+<a id="__codelineno-0-53" name="__codelineno-0-53" href="#__codelineno-0-53"></a>class Reader(AbstractUser):
+<a id="__codelineno-0-54" name="__codelineno-0-54" href="#__codelineno-0-54"></a>    username = models.CharField(max_length=30, unique=True)
+<a id="__codelineno-0-55" name="__codelineno-0-55" href="#__codelineno-0-55"></a>    password = models.CharField(max_length=200)
+<a id="__codelineno-0-56" name="__codelineno-0-56" href="#__codelineno-0-56"></a>
+<a id="__codelineno-0-57" name="__codelineno-0-57" href="#__codelineno-0-57"></a>    REQUIRED_FIELDS = [&#39;card_number&#39;, &#39;first_name&#39;, &#39;last_name&#39;,
+<a id="__codelineno-0-58" name="__codelineno-0-58" href="#__codelineno-0-58"></a>                       &#39;passport&#39;, &#39;date_of_birth&#39;, &#39;address&#39;, &#39;phone&#39;,
+<a id="__codelineno-0-59" name="__codelineno-0-59" href="#__codelineno-0-59"></a>                       &#39;education&#39;, &#39;degree&#39;]
+<a id="__codelineno-0-60" name="__codelineno-0-60" href="#__codelineno-0-60"></a>
+<a id="__codelineno-0-61" name="__codelineno-0-61" href="#__codelineno-0-61"></a>    card_number = models.IntegerField(verbose_name=&#39;Читательский билет&#39;, blank=True, null=True)
+<a id="__codelineno-0-62" name="__codelineno-0-62" href="#__codelineno-0-62"></a>    first_name = models.CharField(max_length=25, verbose_name=&#39;Имя&#39;, blank=True, null=True)
+<a id="__codelineno-0-63" name="__codelineno-0-63" href="#__codelineno-0-63"></a>    last_name = models.CharField(max_length=30, verbose_name=&#39;Фамилия&#39;, blank=True, null=True)
+<a id="__codelineno-0-64" name="__codelineno-0-64" href="#__codelineno-0-64"></a>    passport = models.CharField(max_length=15, verbose_name=&#39;Паспорт&#39;, blank=True, null=True)
+<a id="__codelineno-0-65" name="__codelineno-0-65" href="#__codelineno-0-65"></a>    date_of_birth = models.DateField(verbose_name=&#39;Дата рождения&#39;, blank=True, null=True)
+<a id="__codelineno-0-66" name="__codelineno-0-66" href="#__codelineno-0-66"></a>    address = models.CharField(max_length=300, verbose_name=&#39;Адрес&#39;, blank=True, null=True)
+<a id="__codelineno-0-67" name="__codelineno-0-67" href="#__codelineno-0-67"></a>    phone = models.CharField(max_length=11, verbose_name=&#39;Телефон&#39;, blank=True, null=True)
+<a id="__codelineno-0-68" name="__codelineno-0-68" href="#__codelineno-0-68"></a>
+<a id="__codelineno-0-69" name="__codelineno-0-69" href="#__codelineno-0-69"></a>    education_options = (
+<a id="__codelineno-0-70" name="__codelineno-0-70" href="#__codelineno-0-70"></a>        (&#39;Среднее общее&#39;, &#39;Среднее общее&#39;),
+<a id="__codelineno-0-71" name="__codelineno-0-71" href="#__codelineno-0-71"></a>        (&#39;Среднее специальное&#39;, &#39;Среднее специальное&#39;),
+<a id="__codelineno-0-72" name="__codelineno-0-72" href="#__codelineno-0-72"></a>        (&#39;Высшее&#39;, &#39;Высшее&#39;),
+<a id="__codelineno-0-73" name="__codelineno-0-73" href="#__codelineno-0-73"></a>        (&#39;Неоконченное высшее&#39;, &#39;Неоконченное высшее&#39;),
+<a id="__codelineno-0-74" name="__codelineno-0-74" href="#__codelineno-0-74"></a>        (&#39;Неоконченное среднее&#39;, &#39;Неоконченное среднее&#39;),
+<a id="__codelineno-0-75" name="__codelineno-0-75" href="#__codelineno-0-75"></a>    )
+<a id="__codelineno-0-76" name="__codelineno-0-76" href="#__codelineno-0-76"></a>    education = models.CharField(max_length=4000, choices=education_options, default=&#39;-&#39;,
+<a id="__codelineno-0-77" name="__codelineno-0-77" href="#__codelineno-0-77"></a>                                 verbose_name=&#39;Образование&#39;, blank=True, null=True)
+<a id="__codelineno-0-78" name="__codelineno-0-78" href="#__codelineno-0-78"></a>    degree = models.BooleanField(default=False, verbose_name=&#39;Ученая степень&#39;, blank=True, null=True)
+<a id="__codelineno-0-79" name="__codelineno-0-79" href="#__codelineno-0-79"></a>    reader_hall = models.ForeignKey(&#39;Hall&#39;, on_delete=models.CASCADE, verbose_name=&#39;Зал&#39;,
+<a id="__codelineno-0-80" name="__codelineno-0-80" href="#__codelineno-0-80"></a>                                    blank=True, null=True)
+<a id="__codelineno-0-81" name="__codelineno-0-81" href="#__codelineno-0-81"></a>    reader_book = models.ManyToManyField(&#39;Book&#39;, through=&#39;ReaderBook&#39;, verbose_name=&#39;Книга&#39;)
+<a id="__codelineno-0-82" name="__codelineno-0-82" href="#__codelineno-0-82"></a>
+<a id="__codelineno-0-83" name="__codelineno-0-83" href="#__codelineno-0-83"></a>&#39;&#39;&#39;    def __str__(self):
+<a id="__codelineno-0-84" name="__codelineno-0-84" href="#__codelineno-0-84"></a>        if self.is_superuser:
+<a id="__codelineno-0-85" name="__codelineno-0-85" href="#__codelineno-0-85"></a>            return &#39;superuser&#39;
+<a id="__codelineno-0-86" name="__codelineno-0-86" href="#__codelineno-0-86"></a>        return self.last_name + &#39; &#39; + self.first_name&#39;&#39;&#39;
+<a id="__codelineno-0-87" name="__codelineno-0-87" href="#__codelineno-0-87"></a>
+<a id="__codelineno-0-88" name="__codelineno-0-88" href="#__codelineno-0-88"></a>
+<a id="__codelineno-0-89" name="__codelineno-0-89" href="#__codelineno-0-89"></a>class ReaderBook(models.Model):
+<a id="__codelineno-0-90" name="__codelineno-0-90" href="#__codelineno-0-90"></a>    #book = models.ForeignKey(&#39;Book&#39;, on_delete=models.CASCADE, verbose_name=&#39;Книга&#39;)
+<a id="__codelineno-0-91" name="__codelineno-0-91" href="#__codelineno-0-91"></a>    id_rb = models.IntegerField(verbose_name=&#39;номер выдачи&#39;, blank=True, null=False, primary_key=True)
+<a id="__codelineno-0-92" name="__codelineno-0-92" href="#__codelineno-0-92"></a>    id_copy = models.ForeignKey(&quot;Copy&quot;, verbose_name=&#39;Id_ex&#39;, on_delete=models.CASCADE)
+<a id="__codelineno-0-93" name="__codelineno-0-93" href="#__codelineno-0-93"></a>    #book = models.ForeignKey(&#39;Copy&#39;, verbose_name=&#39;Книга&#39;, on_delete=models.CASCADE)
+<a id="__codelineno-0-94" name="__codelineno-0-94" href="#__codelineno-0-94"></a>    book = models.ForeignKey(&#39;Book&#39;, verbose_name=&#39;Книга&#39;, on_delete=models.CASCADE)
+<a id="__codelineno-0-95" name="__codelineno-0-95" href="#__codelineno-0-95"></a>    reader = models.ForeignKey(&#39;Reader&#39;, on_delete=models.CASCADE, verbose_name=&#39;Читатель&#39;)
+<a id="__codelineno-0-96" name="__codelineno-0-96" href="#__codelineno-0-96"></a>    issue_date = models.DateField(verbose_name=&#39;Дата выдачи&#39;, blank=True, null=True)
+<a id="__codelineno-0-97" name="__codelineno-0-97" href="#__codelineno-0-97"></a>    due_date = models.DateField(verbose_name=&#39;Дата возврата&#39;, blank=True, null=True)
+</code></pre></div>
+<h3 id="rest-api">REST API</h3>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>API обработает запрос и отправит ответ, полученный от сервера. Ответ будет содержать код состояния, который является частью ответного сообщения HTTP, информирующего клиента о результате запроса.
+Endpoints - определенные URL-адреса, которые приложение использует для связи со сторонними службами и своими пользователями:</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<ul>
+<li>
+<p>Список книг:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>GET /library/books/
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>HTTP 200 OK
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>Allow: GET, HEAD, OPTIONS
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>Content-Type: application/json
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>Vary: Accept
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>[
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    {
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>        &quot;id&quot;: 1,
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>        &quot;title&quot;: &quot;ecume des jours&quot;,
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>        &quot;authors&quot;: &quot;boris vian&quot;,
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>        &quot;publisher&quot;: &quot;hachette&quot;,
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>        &quot;publication_year&quot;: 2013,
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>        &quot;genre&quot;: &quot;drama&quot;,
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>        &quot;book_cypher&quot;: &quot;111111&quot;,
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>        &quot;book_hall&quot;: [
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>            2
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>        ],
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>        &quot;book_reader&quot;: [
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>            3
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>        ]
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>    },
+</code></pre></div></p>
+</li>
+<li>
+<p>Создание книги</p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>GET /library/books/create/
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>HTTP 405 Method Not Allowed
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>Allow: POST, OPTIONS
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>Content-Type: application/json
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>Vary: Accept
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>{
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    &quot;detail&quot;: &quot;Method \&quot;GET\&quot; not allowed.&quot;
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>}
+</code></pre></div>
+<ul>
+<li>Информация о заданной книге и её текущем читателе</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>GET /library/books/01/
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>HTTP 200 OK
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>Allow: GET, HEAD, OPTIONS
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>Content-Type: application/json
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>Vary: Accept
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>{
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>    &quot;id&quot;: 1,
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    &quot;book_hall&quot;: [
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>        {
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>            &quot;id&quot;: 2,
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>            &quot;number&quot;: 2,
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>            &quot;title&quot;: &quot;Drama&quot;,
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>            &quot;capacity&quot;: 10
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>        }
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>    ],
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>    &quot;book_reader&quot;: [
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>        {
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>            &quot;id&quot;: 3,
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>            &quot;last_login&quot;: null,
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>            &quot;is_superuser&quot;: false,
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>            &quot;email&quot;: &quot;b@a.com&quot;,
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>            &quot;is_staff&quot;: false,
+<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>            &quot;is_active&quot;: true,
+<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>            &quot;date_joined&quot;: &quot;2022-12-03T21:10:45.704223Z&quot;,
+<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>            &quot;username&quot;: &quot;Ashot&quot;,
+<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a>            &quot;password&quot;: &quot;pbkdf2_sha256$390000$bZL7e1qcgB0An8pKB8IBYZ$6f1q5wqRAO5I80xcDLKUKDDRUwx65T2CFuwKfPaVXgU=&quot;,
+<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>            &quot;card_number&quot;: null,
+<a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a>            &quot;first_name&quot;: null,
+<a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a>            &quot;last_name&quot;: null,
+<a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a>            &quot;passport&quot;: null,
+<a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a>            &quot;date_of_birth&quot;: null,
+<a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a>            &quot;address&quot;: null,
+<a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a>            &quot;phone&quot;: null,
+<a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a>            &quot;education&quot;: &quot;-&quot;,
+<a id="__codelineno-3-37" name="__codelineno-3-37" href="#__codelineno-3-37"></a>            &quot;degree&quot;: false,
+<a id="__codelineno-3-38" name="__codelineno-3-38" href="#__codelineno-3-38"></a>            &quot;reader_hall&quot;: null,
+<a id="__codelineno-3-39" name="__codelineno-3-39" href="#__codelineno-3-39"></a>            &quot;groups&quot;: [],
+<a id="__codelineno-3-40" name="__codelineno-3-40" href="#__codelineno-3-40"></a>            &quot;user_permissions&quot;: [],
+<a id="__codelineno-3-41" name="__codelineno-3-41" href="#__codelineno-3-41"></a>            &quot;reader_book&quot;: [
+<a id="__codelineno-3-42" name="__codelineno-3-42" href="#__codelineno-3-42"></a>                1
+<a id="__codelineno-3-43" name="__codelineno-3-43" href="#__codelineno-3-43"></a>            ]
+<a id="__codelineno-3-44" name="__codelineno-3-44" href="#__codelineno-3-44"></a>        }
+<a id="__codelineno-3-45" name="__codelineno-3-45" href="#__codelineno-3-45"></a>    ],
+<a id="__codelineno-3-46" name="__codelineno-3-46" href="#__codelineno-3-46"></a>    &quot;title&quot;: &quot;ecume des jours&quot;,
+<a id="__codelineno-3-47" name="__codelineno-3-47" href="#__codelineno-3-47"></a>    &quot;authors&quot;: &quot;boris vian&quot;,
+<a id="__codelineno-3-48" name="__codelineno-3-48" href="#__codelineno-3-48"></a>    &quot;publisher&quot;: &quot;hachette&quot;,
+<a id="__codelineno-3-49" name="__codelineno-3-49" href="#__codelineno-3-49"></a>    &quot;publication_year&quot;: 2013,
+<a id="__codelineno-3-50" name="__codelineno-3-50" href="#__codelineno-3-50"></a>    &quot;genre&quot;: &quot;drama&quot;,
+<a id="__codelineno-3-51" name="__codelineno-3-51" href="#__codelineno-3-51"></a>    &quot;book_cypher&quot;: &quot;111111&quot;
+<a id="__codelineno-3-52" name="__codelineno-3-52" href="#__codelineno-3-52"></a>}
+</code></pre></div>
+<ul>
+<li>Редактирование заданной книги</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>GET /library/books/edit/01/
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>HTTP 200 OK
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>Allow: GET, PUT, PATCH, DELETE, HEAD, OPTIONS
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>Content-Type: application/json
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>Vary: Accept
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>{
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>    &quot;id&quot;: 1,
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>    &quot;title&quot;: &quot;ecume des jours&quot;,
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>    &quot;authors&quot;: &quot;boris vian&quot;,
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>    &quot;publisher&quot;: &quot;hachette&quot;,
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>    &quot;publication_year&quot;: 2013,
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>    &quot;genre&quot;: &quot;drama&quot;,
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>    &quot;book_cypher&quot;: &quot;111111&quot;,
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>    &quot;book_hall&quot;: [
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>        2
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>    ],
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>    &quot;book_reader&quot;: [
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>        3
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>    ]
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>}
+</code></pre></div>
+<ul>
+<li>Список читателей</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>GET /library/readers/
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>HTTP 200 OK
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>Allow: GET, HEAD, OPTIONS
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>Content-Type: application/json
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>Vary: Accept
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>{
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>        &quot;id&quot;: 2,
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>        &quot;last_login&quot;: null,
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>        &quot;is_superuser&quot;: false,
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>        &quot;email&quot;: &quot;a@a.com&quot;,
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>        &quot;is_staff&quot;: false,
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>        &quot;is_active&quot;: true,
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>        &quot;date_joined&quot;: &quot;2022-12-03T21:08:49.728185Z&quot;,
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>        &quot;username&quot;: &quot;Igor&quot;,
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>        &quot;password&quot;: &quot;pbkdf2_sha256$390000$AKlcwNoM3QHjBsj8mBPG4L$kYbTFqKteSWw/OJnXqwwLURPYI7tBBJiw4CxsbRt6JQ=&quot;,
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>        &quot;card_number&quot;: null,
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>        &quot;first_name&quot;: null,
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a>        &quot;last_name&quot;: null,
+<a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a>        &quot;passport&quot;: null,
+<a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a>        &quot;date_of_birth&quot;: null,
+<a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a>        &quot;address&quot;: null,
+<a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a>        &quot;phone&quot;: null,
+<a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a>        &quot;education&quot;: &quot;-&quot;,
+<a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a>        &quot;degree&quot;: false,
+<a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a>        &quot;reader_hall&quot;: null,
+<a id="__codelineno-5-28" name="__codelineno-5-28" href="#__codelineno-5-28"></a>        &quot;groups&quot;: [],
+<a id="__codelineno-5-29" name="__codelineno-5-29" href="#__codelineno-5-29"></a>        &quot;user_permissions&quot;: [],
+<a id="__codelineno-5-30" name="__codelineno-5-30" href="#__codelineno-5-30"></a>        &quot;reader_book&quot;: []
+<a id="__codelineno-5-31" name="__codelineno-5-31" href="#__codelineno-5-31"></a>    },
+</code></pre></div>
+<ul>
+<li>Создание читателя</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>GET /library/readers/create/
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>HTTP 405 Method Not Allowed
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>Allow: POST, OPTIONS
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>Content-Type: application/json
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>Vary: Accept
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>{
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>    &quot;detail&quot;: &quot;Method \&quot;GET\&quot; not allowed.&quot;
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>}
+</code></pre></div>
+<ul>
+<li>Информация о заданном читателе</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>GET /library/readers/02/
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>HTTP 200 OK
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>Allow: GET, HEAD, OPTIONS
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>Content-Type: application/json
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>Vary: Accept
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>{
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>    &quot;id&quot;: 2,
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>    &quot;reader_hall&quot;: null,
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>    &quot;reader_book&quot;: [],
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>    &quot;last_login&quot;: null,
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>    &quot;is_superuser&quot;: false,
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>    &quot;email&quot;: &quot;a@a.com&quot;,
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>    &quot;is_staff&quot;: false,
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>    &quot;is_active&quot;: true,
+<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>    &quot;date_joined&quot;: &quot;2022-12-03T21:08:49.728185Z&quot;,
+<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>    &quot;username&quot;: &quot;Igor&quot;,
+<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a>    &quot;password&quot;: &quot;pbkdf2_sha256$390000$AKlcwNoM3QHjBsj8mBPG4L$kYbTFqKteSWw/OJnXqwwLURPYI7tBBJiw4CxsbRt6JQ=&quot;,
+<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>    &quot;card_number&quot;: null,
+<a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>    &quot;first_name&quot;: null,
+<a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a>    &quot;last_name&quot;: null,
+<a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a>    &quot;passport&quot;: null,
+<a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a>    &quot;date_of_birth&quot;: null,
+<a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a>    &quot;address&quot;: null,
+<a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a>    &quot;phone&quot;: null,
+<a id="__codelineno-7-27" name="__codelineno-7-27" href="#__codelineno-7-27"></a>    &quot;education&quot;: &quot;-&quot;,
+<a id="__codelineno-7-28" name="__codelineno-7-28" href="#__codelineno-7-28"></a>    &quot;degree&quot;: false,
+<a id="__codelineno-7-29" name="__codelineno-7-29" href="#__codelineno-7-29"></a>    &quot;groups&quot;: [],
+<a id="__codelineno-7-30" name="__codelineno-7-30" href="#__codelineno-7-30"></a>    &quot;user_permissions&quot;: []
+<a id="__codelineno-7-31" name="__codelineno-7-31" href="#__codelineno-7-31"></a>}
+</code></pre></div>
+<ul>
+<li>Редактирование информации о заданном читателе</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>GET /library/readers/edit/02/
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>HTTP 200 OK
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>Allow: GET, PUT, PATCH, DELETE, HEAD, OPTIONS
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>Content-Type: application/json
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>Vary: Accept
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>{
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>    &quot;id&quot;: 2,
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>    &quot;last_login&quot;: null,
+</code></pre></div>
+<ul>
+<li>Список экземпляров</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>GET /library/copies/
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>HTTP 200 OK
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>Allow: GET, HEAD, OPTIONS
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>Content-Type: application/json
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>Vary: Accept
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>[
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>    {
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>        &quot;id_copy&quot;: 1,
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>        &quot;section&quot;: &quot;fiction&quot;,
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>        &quot;code&quot;: &quot;01&quot;,
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>        &quot;year&quot;: 2013,
+<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>        &quot;condition&quot;: &quot;х&quot;,
+<a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a>        &quot;book&quot;: 1
+<a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a>    },
+</code></pre></div>
+<ul>
+<li>Создание экземпляров</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>GET /library/copies/create/
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>HTTP 405 Method Not Allowed
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>Allow: POST, OPTIONS
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>Content-Type: application/json
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>Vary: Accept
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>{
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>    &quot;detail&quot;: &quot;Method \&quot;GET\&quot; not allowed.&quot;
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>}
+</code></pre></div>
+<ul>
+<li>Добавить книгу в зал</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>GET /library/bookinhall/create/
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>HTTP 405 Method Not Allowed
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>Allow: POST, OPTIONS
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>Content-Type: application/json
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>Vary: Accept
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>{
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>    &quot;detail&quot;: &quot;Method \&quot;GET\&quot; not allowed.&quot;
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>}
+</code></pre></div>
+<h3 id="-swagger">Документация - Swagger</h3>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>Административный интерфейс с поддержкой REST для API</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>Инициализирован:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>path(&#39;doc/redoc&#39;, schema_view.with_ui(&#39;redoc&#39;, cache_timeout=0), name=&#39;schema-redoc&#39;)
+</code></pre></div></p>
+<p>urls.py</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>from .views import *
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>app_name = &quot;library_app&quot;
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>urlpatterns = [
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>    path(&#39;books/&#39;, BookListAPIView.as_view()),  # Список книг
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>    path(&#39;books/create/&#39;, BookCreateAPIView.as_view()),  # Создание книги
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>    path(&#39;books/&lt;int:pk&gt;/&#39;, BookRetrieveAPIView.as_view()),  # Информация о заданной книге
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>    # Модификация
+<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>    path(&#39;books/edit/&lt;int:pk&gt;/&#39;, BookRetrieveUpdateDestroyAPIView.as_view()),
+<a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>
+<a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a>    path(&#39;readers/&#39;, ReaderListAPIView.as_view()),  # Список читателей
+<a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a>    path(&#39;readers/create/&#39;, ReaderCreateAPIView.as_view()),  # Создание читателей
+<a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a>    path(&#39;readers/&lt;int:pk&gt;/&#39;, ReaderRetrieveAPIView.as_view()),  # Информация о заданном читателе
+<a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a>
+<a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a>
+<a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a>    #Экземпляры
+<a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a>    path(&#39;readers/edit/&lt;int:pk&gt;/&#39;, ReaderRetrieveUpdateDestroyAPIView.as_view()),
+<a id="__codelineno-13-20" name="__codelineno-13-20" href="#__codelineno-13-20"></a>    path(&#39;copies/&#39;, CopyListAPIView.as_view()), 
+<a id="__codelineno-13-21" name="__codelineno-13-21" href="#__codelineno-13-21"></a>    path(&#39;copies/create/&#39;, CopyCreateAPIView.as_view()),
+<a id="__codelineno-13-22" name="__codelineno-13-22" href="#__codelineno-13-22"></a>    #path(&#39;copies/&lt;int:pk&gt;/&#39;, CopyRetrieveAPIView.as_view()),  # book info by id
+<a id="__codelineno-13-23" name="__codelineno-13-23" href="#__codelineno-13-23"></a>     path(&#39;bookinhall/create/&#39;, BookInhallCreateAPIView.as_view()), 
+<a id="__codelineno-13-24" name="__codelineno-13-24" href="#__codelineno-13-24"></a>    #path(&#39;inst/&lt;int:pk&gt;/&#39;, OneICopy.as_view()),
+<a id="__codelineno-13-25" name="__codelineno-13-25" href="#__codelineno-13-25"></a>
+<a id="__codelineno-13-26" name="__codelineno-13-26" href="#__codelineno-13-26"></a>    # path(&#39;report/&#39;, ReportApiView.as_view()),  # report
+<a id="__codelineno-13-27" name="__codelineno-13-27" href="#__codelineno-13-27"></a>]
+</code></pre></div>
+<h3 id="_3">Сериализация</h3>
+<p>Чтобы документировать REST API, необходимо преобразовать таблицы в поддерживаемый формат - JSON. Для этого нужна сериализация - обработка таблиц в json формат:</p>
+<p>serializers.py
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>from rest_framework import serializers
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>from .models import *
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>class CopySerializer(serializers.ModelSerializer):
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>   class Meta:
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>     model = Copy
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>     fields = &quot;__all__&quot;
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>
+<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a>class BookSerializer(serializers.ModelSerializer):
+<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a>    class Meta:
+<a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a>        model = Book
+<a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a>        fields = &quot;__all__&quot;
+<a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a>
+<a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a>
+<a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a>class BookInhallSerializer(serializers.ModelSerializer):
+<a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a>    class Meta:
+<a id="__codelineno-14-22" name="__codelineno-14-22" href="#__codelineno-14-22"></a>        model = BookInHall
+<a id="__codelineno-14-23" name="__codelineno-14-23" href="#__codelineno-14-23"></a>        fields = &quot;__all__&quot;
+<a id="__codelineno-14-24" name="__codelineno-14-24" href="#__codelineno-14-24"></a>
+<a id="__codelineno-14-25" name="__codelineno-14-25" href="#__codelineno-14-25"></a>class HallSerializer(serializers.ModelSerializer):
+<a id="__codelineno-14-26" name="__codelineno-14-26" href="#__codelineno-14-26"></a>    class Meta:
+<a id="__codelineno-14-27" name="__codelineno-14-27" href="#__codelineno-14-27"></a>        model = Hall
+<a id="__codelineno-14-28" name="__codelineno-14-28" href="#__codelineno-14-28"></a>        fields = &quot;__all__&quot;
+<a id="__codelineno-14-29" name="__codelineno-14-29" href="#__codelineno-14-29"></a>
+<a id="__codelineno-14-30" name="__codelineno-14-30" href="#__codelineno-14-30"></a>
+<a id="__codelineno-14-31" name="__codelineno-14-31" href="#__codelineno-14-31"></a>class ReaderSerializer(serializers.ModelSerializer):
+<a id="__codelineno-14-32" name="__codelineno-14-32" href="#__codelineno-14-32"></a>    class Meta:
+<a id="__codelineno-14-33" name="__codelineno-14-33" href="#__codelineno-14-33"></a>        model = Reader
+<a id="__codelineno-14-34" name="__codelineno-14-34" href="#__codelineno-14-34"></a>        fields = &quot;__all__&quot;
+<a id="__codelineno-14-35" name="__codelineno-14-35" href="#__codelineno-14-35"></a>
+<a id="__codelineno-14-36" name="__codelineno-14-36" href="#__codelineno-14-36"></a>    def create(self, validated_data):
+<a id="__codelineno-14-37" name="__codelineno-14-37" href="#__codelineno-14-37"></a>        user = Reader(
+<a id="__codelineno-14-38" name="__codelineno-14-38" href="#__codelineno-14-38"></a>            email=validated_data[&#39;email&#39;],
+<a id="__codelineno-14-39" name="__codelineno-14-39" href="#__codelineno-14-39"></a>            username=validated_data[&#39;username&#39;]
+<a id="__codelineno-14-40" name="__codelineno-14-40" href="#__codelineno-14-40"></a>        )
+<a id="__codelineno-14-41" name="__codelineno-14-41" href="#__codelineno-14-41"></a>        user.set_password(validated_data[&#39;password&#39;])
+<a id="__codelineno-14-42" name="__codelineno-14-42" href="#__codelineno-14-42"></a>        user.save()
+<a id="__codelineno-14-43" name="__codelineno-14-43" href="#__codelineno-14-43"></a>        return user
+<a id="__codelineno-14-44" name="__codelineno-14-44" href="#__codelineno-14-44"></a>
+<a id="__codelineno-14-45" name="__codelineno-14-45" href="#__codelineno-14-45"></a>
+<a id="__codelineno-14-46" name="__codelineno-14-46" href="#__codelineno-14-46"></a>class BookRetrieveSerializer(serializers.ModelSerializer):
+<a id="__codelineno-14-47" name="__codelineno-14-47" href="#__codelineno-14-47"></a>    book_hall = HallSerializer(many=True)
+<a id="__codelineno-14-48" name="__codelineno-14-48" href="#__codelineno-14-48"></a>    book_reader = ReaderSerializer(many=True)
+<a id="__codelineno-14-49" name="__codelineno-14-49" href="#__codelineno-14-49"></a>
+<a id="__codelineno-14-50" name="__codelineno-14-50" href="#__codelineno-14-50"></a>    class Meta:
+<a id="__codelineno-14-51" name="__codelineno-14-51" href="#__codelineno-14-51"></a>        model = Book
+<a id="__codelineno-14-52" name="__codelineno-14-52" href="#__codelineno-14-52"></a>        fields = &quot;__all__&quot;
+<a id="__codelineno-14-53" name="__codelineno-14-53" href="#__codelineno-14-53"></a>
+<a id="__codelineno-14-54" name="__codelineno-14-54" href="#__codelineno-14-54"></a>
+<a id="__codelineno-14-55" name="__codelineno-14-55" href="#__codelineno-14-55"></a>class ReaderRetrieveSerializer(serializers.ModelSerializer):
+<a id="__codelineno-14-56" name="__codelineno-14-56" href="#__codelineno-14-56"></a>    reader_hall = HallSerializer()
+<a id="__codelineno-14-57" name="__codelineno-14-57" href="#__codelineno-14-57"></a>    reader_book = BookSerializer(many=True)
+<a id="__codelineno-14-58" name="__codelineno-14-58" href="#__codelineno-14-58"></a>
+<a id="__codelineno-14-59" name="__codelineno-14-59" href="#__codelineno-14-59"></a>    class Meta:
+<a id="__codelineno-14-60" name="__codelineno-14-60" href="#__codelineno-14-60"></a>        model = Reader
+<a id="__codelineno-14-61" name="__codelineno-14-61" href="#__codelineno-14-61"></a>        fields = &quot;__all__&quot;
+</code></pre></div></p>
+<p>views.py</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>from django.db.models import Sum
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>from .serializers import *
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>from rest_framework.generics import *
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>class CopyListAPIView(ListAPIView):
+<a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>    serializer_class = CopySerializer
+<a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>    queryset = Copy.objects.all()
+<a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a>
+<a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a>class CopyCreateAPIView(CreateAPIView):
+<a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a>    serializer_class = CopySerializer
+<a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a>    queryset = Copy.objects.all()
+<a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a>
+<a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a>
+<a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a>class CopykRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
+<a id="__codelineno-15-17" name="__codelineno-15-17" href="#__codelineno-15-17"></a>    serializer_class = CopySerializer
+<a id="__codelineno-15-18" name="__codelineno-15-18" href="#__codelineno-15-18"></a>    queryset = Copy.objects.all()
+<a id="__codelineno-15-19" name="__codelineno-15-19" href="#__codelineno-15-19"></a>
+<a id="__codelineno-15-20" name="__codelineno-15-20" href="#__codelineno-15-20"></a>class BookRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
+<a id="__codelineno-15-21" name="__codelineno-15-21" href="#__codelineno-15-21"></a>    serializer_class = BookSerializer
+<a id="__codelineno-15-22" name="__codelineno-15-22" href="#__codelineno-15-22"></a>    queryset = Book.objects.all()
+<a id="__codelineno-15-23" name="__codelineno-15-23" href="#__codelineno-15-23"></a>
+<a id="__codelineno-15-24" name="__codelineno-15-24" href="#__codelineno-15-24"></a>#class CopyRetrieveAPIView(RetrieveAPIView):
+<a id="__codelineno-15-25" name="__codelineno-15-25" href="#__codelineno-15-25"></a>    #serializer_class = CopyRetrieveSerializer
+<a id="__codelineno-15-26" name="__codelineno-15-26" href="#__codelineno-15-26"></a>    #queryset = Copy.objects.all()
+<a id="__codelineno-15-27" name="__codelineno-15-27" href="#__codelineno-15-27"></a>
+<a id="__codelineno-15-28" name="__codelineno-15-28" href="#__codelineno-15-28"></a>class BookListAPIView(ListAPIView):
+<a id="__codelineno-15-29" name="__codelineno-15-29" href="#__codelineno-15-29"></a>    serializer_class = BookSerializer
+<a id="__codelineno-15-30" name="__codelineno-15-30" href="#__codelineno-15-30"></a>    queryset = Book.objects.all()
+<a id="__codelineno-15-31" name="__codelineno-15-31" href="#__codelineno-15-31"></a>
+<a id="__codelineno-15-32" name="__codelineno-15-32" href="#__codelineno-15-32"></a>
+<a id="__codelineno-15-33" name="__codelineno-15-33" href="#__codelineno-15-33"></a>
+<a id="__codelineno-15-34" name="__codelineno-15-34" href="#__codelineno-15-34"></a>class BookCreateAPIView(CreateAPIView):
+<a id="__codelineno-15-35" name="__codelineno-15-35" href="#__codelineno-15-35"></a>    serializer_class = BookSerializer
+<a id="__codelineno-15-36" name="__codelineno-15-36" href="#__codelineno-15-36"></a>    queryset = Book.objects.all()
+<a id="__codelineno-15-37" name="__codelineno-15-37" href="#__codelineno-15-37"></a>
+<a id="__codelineno-15-38" name="__codelineno-15-38" href="#__codelineno-15-38"></a>
+<a id="__codelineno-15-39" name="__codelineno-15-39" href="#__codelineno-15-39"></a>class BookRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
+<a id="__codelineno-15-40" name="__codelineno-15-40" href="#__codelineno-15-40"></a>    serializer_class = BookSerializer
+<a id="__codelineno-15-41" name="__codelineno-15-41" href="#__codelineno-15-41"></a>    queryset = Book.objects.all()
+<a id="__codelineno-15-42" name="__codelineno-15-42" href="#__codelineno-15-42"></a>
+<a id="__codelineno-15-43" name="__codelineno-15-43" href="#__codelineno-15-43"></a>
+<a id="__codelineno-15-44" name="__codelineno-15-44" href="#__codelineno-15-44"></a>class BookRetrieveAPIView(RetrieveAPIView):
+<a id="__codelineno-15-45" name="__codelineno-15-45" href="#__codelineno-15-45"></a>    serializer_class = BookRetrieveSerializer
+<a id="__codelineno-15-46" name="__codelineno-15-46" href="#__codelineno-15-46"></a>    queryset = Book.objects.all()
+<a id="__codelineno-15-47" name="__codelineno-15-47" href="#__codelineno-15-47"></a>
+<a id="__codelineno-15-48" name="__codelineno-15-48" href="#__codelineno-15-48"></a>
+<a id="__codelineno-15-49" name="__codelineno-15-49" href="#__codelineno-15-49"></a>class ReaderListAPIView(ListAPIView):
+<a id="__codelineno-15-50" name="__codelineno-15-50" href="#__codelineno-15-50"></a>    serializer_class = ReaderSerializer
+<a id="__codelineno-15-51" name="__codelineno-15-51" href="#__codelineno-15-51"></a>    queryset = Reader.objects.all()
+<a id="__codelineno-15-52" name="__codelineno-15-52" href="#__codelineno-15-52"></a>
+<a id="__codelineno-15-53" name="__codelineno-15-53" href="#__codelineno-15-53"></a>
+<a id="__codelineno-15-54" name="__codelineno-15-54" href="#__codelineno-15-54"></a>class ReaderCreateAPIView(CreateAPIView):
+<a id="__codelineno-15-55" name="__codelineno-15-55" href="#__codelineno-15-55"></a>    serializer_class = ReaderSerializer
+<a id="__codelineno-15-56" name="__codelineno-15-56" href="#__codelineno-15-56"></a>    queryset = Reader.objects.all()
+<a id="__codelineno-15-57" name="__codelineno-15-57" href="#__codelineno-15-57"></a>
+<a id="__codelineno-15-58" name="__codelineno-15-58" href="#__codelineno-15-58"></a>
+<a id="__codelineno-15-59" name="__codelineno-15-59" href="#__codelineno-15-59"></a>class ReaderRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
+<a id="__codelineno-15-60" name="__codelineno-15-60" href="#__codelineno-15-60"></a>    serializer_class = ReaderSerializer
+<a id="__codelineno-15-61" name="__codelineno-15-61" href="#__codelineno-15-61"></a>    queryset = Reader.objects.all()
+<a id="__codelineno-15-62" name="__codelineno-15-62" href="#__codelineno-15-62"></a>
+<a id="__codelineno-15-63" name="__codelineno-15-63" href="#__codelineno-15-63"></a>
+<a id="__codelineno-15-64" name="__codelineno-15-64" href="#__codelineno-15-64"></a>class ReaderRetrieveAPIView(RetrieveAPIView):
+<a id="__codelineno-15-65" name="__codelineno-15-65" href="#__codelineno-15-65"></a>    serializer_class = ReaderRetrieveSerializer
+<a id="__codelineno-15-66" name="__codelineno-15-66" href="#__codelineno-15-66"></a>    queryset = Reader.objects.all()
+<a id="__codelineno-15-67" name="__codelineno-15-67" href="#__codelineno-15-67"></a>
+<a id="__codelineno-15-68" name="__codelineno-15-68" href="#__codelineno-15-68"></a>
+<a id="__codelineno-15-69" name="__codelineno-15-69" href="#__codelineno-15-69"></a>class BookInhallrListAPIView(ListAPIView):
+<a id="__codelineno-15-70" name="__codelineno-15-70" href="#__codelineno-15-70"></a>    serializer_class = BookInhallSerializer
+<a id="__codelineno-15-71" name="__codelineno-15-71" href="#__codelineno-15-71"></a>    queryset = BookInHall.objects.all()
+<a id="__codelineno-15-72" name="__codelineno-15-72" href="#__codelineno-15-72"></a>
+<a id="__codelineno-15-73" name="__codelineno-15-73" href="#__codelineno-15-73"></a>class BookInhallCreateAPIView(CreateAPIView):
+<a id="__codelineno-15-74" name="__codelineno-15-74" href="#__codelineno-15-74"></a>    serializer_class = BookInhallSerializer
+<a id="__codelineno-15-75" name="__codelineno-15-75" href="#__codelineno-15-75"></a>    queryset = BookInHall.objects.all()
+<a id="__codelineno-15-76" name="__codelineno-15-76" href="#__codelineno-15-76"></a>
+<a id="__codelineno-15-77" name="__codelineno-15-77" href="#__codelineno-15-77"></a>class BookInhallRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
+<a id="__codelineno-15-78" name="__codelineno-15-78" href="#__codelineno-15-78"></a>    serializer_class = BookInhallSerializer
+<a id="__codelineno-15-79" name="__codelineno-15-79" href="#__codelineno-15-79"></a>    queryset = BookInHall.objects.all()
+<a id="__codelineno-15-80" name="__codelineno-15-80" href="#__codelineno-15-80"></a>
+<a id="__codelineno-15-81" name="__codelineno-15-81" href="#__codelineno-15-81"></a>
+<a id="__codelineno-15-82" name="__codelineno-15-82" href="#__codelineno-15-82"></a>class HallrListAPIView(ListAPIView):
+<a id="__codelineno-15-83" name="__codelineno-15-83" href="#__codelineno-15-83"></a>    serializer_class = HallSerializer
+<a id="__codelineno-15-84" name="__codelineno-15-84" href="#__codelineno-15-84"></a>    queryset = Hall.objects.all()
+<a id="__codelineno-15-85" name="__codelineno-15-85" href="#__codelineno-15-85"></a>
+<a id="__codelineno-15-86" name="__codelineno-15-86" href="#__codelineno-15-86"></a>class HallCreateAPIView(CreateAPIView):
+<a id="__codelineno-15-87" name="__codelineno-15-87" href="#__codelineno-15-87"></a>    serializer_class = HallSerializer
+<a id="__codelineno-15-88" name="__codelineno-15-88" href="#__codelineno-15-88"></a>    queryset = Hall.objects.all()
+<a id="__codelineno-15-89" name="__codelineno-15-89" href="#__codelineno-15-89"></a>
+<a id="__codelineno-15-90" name="__codelineno-15-90" href="#__codelineno-15-90"></a>class HallRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
+<a id="__codelineno-15-91" name="__codelineno-15-91" href="#__codelineno-15-91"></a>    serializer_class = HallSerializer
+<a id="__codelineno-15-92" name="__codelineno-15-92" href="#__codelineno-15-92"></a>    queryset = Hall.objects.all()
 </code></pre></div></div>
             </div>
         </div>
